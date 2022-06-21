@@ -41,7 +41,7 @@ fn verify_ip(ip: &String) -> Result<(), String> {
     }
 
     for idx in 0..4 {
-        // Configs that the octets are in range 0..=255
+        // Confirms that the octets are in range 0..=255
         match ip_octals[idx].parse::<u8>() {
             Ok(x) => x,
             Err(_) => return Err(format!("Ill formatted IPv4: {}", ip)),

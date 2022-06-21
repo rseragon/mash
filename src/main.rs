@@ -1,10 +1,12 @@
 use std::process;
+use tokio;
 
 mod cliparser;
+mod utils;
 mod server;
 
-//#[tokio::main]
-fn main() {
+#[tokio::main]
+async fn main() {
     let config = cliparser::parse();
 
     if let Err(x) = cliparser::verify_config(&config) {
@@ -12,5 +14,12 @@ fn main() {
        process::exit(1);
     }
 
-    server::serve(&config);
+    // Handles Ctrl-c in a different task
+    tokio::spawn(async {
+        tokio::signal::ctrl_c().await.unwrap();
+        eprintln!("Ctrl-C detected! Stopping server");
+        std::process::exit(1);
+    });
+
+    server::serve(&config).await;
 }
