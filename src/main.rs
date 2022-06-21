@@ -1,5 +1,6 @@
 use std::process;
 use tokio;
+use paris;
 
 mod cliparser;
 mod utils;
@@ -7,19 +8,23 @@ mod server;
 
 #[tokio::main]
 async fn main() {
+
+    // Get the config
     let config = cliparser::parse();
 
-    if let Err(x) = cliparser::verify_config(&config) {
-       println!("{x}");
+    // Verify the config
+    if let Err(e) = cliparser::verify_config(&config) {
+       paris::error!("{e}");
        process::exit(1);
     }
 
     // Handles Ctrl-c in a different task
     tokio::spawn(async {
         tokio::signal::ctrl_c().await.unwrap();
-        eprintln!("Ctrl-C detected! Stopping server");
+        paris::info!("Ctrl-C detected! Stopping server");
         std::process::exit(1);
     });
 
+    // Serve the server :)
     server::serve(&config).await;
 }

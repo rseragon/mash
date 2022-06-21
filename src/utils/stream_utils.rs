@@ -37,8 +37,15 @@ pub async fn write_bytes(sock: &mut TcpStream, buf: &[u8]) -> Result<(), String>
 
     match sock.write(&buf[..]).await {
         Err(err) => return Err(format!("Failed to write: {}", err)),
-        Ok(_) => return Ok(()),
+        Ok(_) => {},
     };
+
+    match sock.flush().await {
+        Err(err) => return Err(format!("Failed to flush socket: {}", err)),
+        Ok(_) => {},
+    }
+
+    Ok(())
 
 }
 
@@ -46,7 +53,14 @@ pub async fn write_string(sock: &mut TcpStream, buf: &str) -> Result<(), String>
 
     match sock.write(&buf.as_bytes()[..]).await {
         Err(err) => return Err(format!("Failed to write: {}", err)),
-        Ok(_) => return Ok(()),
+        Ok(_) => {},
     };
+
+    match sock.flush().await {
+        Err(err) => return Err(format!("Failed to flush socket: {}", err)),
+        Ok(_) => {},
+    }
+
+    Ok(())
 
 }

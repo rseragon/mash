@@ -45,7 +45,7 @@ impl Response {
 
         /* Response format
          * EG:
-         * 200 OK
+         * HTTP/1.1 200 OK
          * Connection: Keep-Alive
          * ...
          * Content-Length: (len)
