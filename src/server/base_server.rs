@@ -35,14 +35,7 @@ async fn process(mut sock: TcpStream) {
 
     let mut buf = stream_utils::read_to_bytes(&mut sock).await;
 
-    let req = match request::Request::parse(& buf) {
-        Err(e) => { paris::error!("{e}"); return (); },
-        Ok(r) => r,
-    };
-
-    // TODO: Loggins of request
-
-    let resp = Response::new(ResponseCode::OK_200, HashMap::new(), String::from("200 Okiew"));
+    let resp = handle_request(buf).await;
 
     match stream_utils::write_bytes(&mut sock, resp.build().as_bytes()).await {
         Err(s) => {
@@ -51,4 +44,29 @@ async fn process(mut sock: TcpStream) {
         Ok(_) => {}, // TODO
     };
 
+}
+
+async fn handle_request(buf: Vec<u8>) -> Response {
+
+    /* let req = match request::Request::parse(& buf) {
+        Err(ee) => {
+            // TODO: send error response here
+        }, 
+        Ok(r) => (),
+    };
+*/
+    let req_res = request::Request::parse(&buf);
+
+    // TODO: logging of request
+    
+    let resp: Response;
+
+    if let Err(ee) = req_res {
+        resp = Response::new(ee.err, ee.expl);
+    }
+    else {
+        resp = Response::new(ResponseCode::OK_200, String::from("200 Okiew"));
+    }
+
+    resp
 }

@@ -2,10 +2,10 @@ use super::{Response, ResponseCode};
 use std::collections::HashMap;
 
 impl Response {
-    pub fn new(status_code: ResponseCode, headers: HashMap<String, String>, body: String) -> Response {
+    pub fn new(status_code: ResponseCode, body: String) -> Response {
         Response {
             status_code,
-            headers,
+            headers: HashMap::new(),
             body
         }
     }
@@ -27,9 +27,11 @@ impl Response {
         // EG: (1) 200 OK 
         let code_str = match self.status_code {
             OK_200 => "200 OK",
+            BAD_REQUEST_400 => "400 Bad Request",
             NOT_FOUND_404 => "404 Not Found",
             INTERNAL_SERVER_ERROR_500 => "500 Internal Server Error",
             NOT_IMPLEMENTED_501 => "501 Not Implemented",
+            HTTP_VERSION_NOT_SUPPORTED_505 => "505 HTTP Version Not Supported",
         };
 
 

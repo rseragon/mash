@@ -14,8 +14,9 @@ pub enum HttpVersion {
 
 #[derive(Debug)]
 pub struct Request {
-    req_type: RequestType,
-    path: String,
-    http_version: HttpVersion,
-    content_headers: HashMap<String, String>,
+    pub req_type: RequestType,
+    pub path: String,
+    pub http_version: HttpVersion,
+    pub content_headers: HashMap<String, String>,
 }
+
