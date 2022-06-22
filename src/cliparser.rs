@@ -18,16 +18,26 @@ pub struct Config {
 
 }
 
+impl Clone for Config {
+    fn clone(&self) -> Self {
+        Config {
+            host: self.host.clone(),
+            port: self.port,
+            path: self.path.clone(),
+        }
+    }
+}
+
 pub fn parse() -> Config {
     let args = Config::parse();
 
     args
 }
 
-pub fn verify_config(conf: &Config) -> Result<(), String> {
+pub fn verify_config(conf: &mut Config) -> Result<(), String> {
 
     verify_ip(&conf.host)?;
-    verify_path(&conf.path)?;
+    verify_path(conf)?;
 
     Ok(())
 }
@@ -51,8 +61,10 @@ fn verify_ip(ip: &String) -> Result<(), String> {
     Ok(())
 }
 
-fn verify_path(path_string: &String) -> Result<(), String> {
+fn verify_path(conf: &mut Config) -> Result<(), String> {
     use std::path::Path;
+
+    let path_string = &conf.path;
 
     let p = Path::new(path_string);
 
@@ -63,6 +75,9 @@ fn verify_path(path_string: &String) -> Result<(), String> {
     if p.is_file() {
         return Err(format!("Path provided is a file: {}", path_string));
     }
+
+    // Set path to canonical path for future purpose
+    conf.path = p.display().to_string();
 
     Ok(())
 }

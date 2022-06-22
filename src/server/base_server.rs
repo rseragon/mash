@@ -6,6 +6,8 @@ use crate::utils::stream_utils;
 use crate::server::request as request;
 use crate::server::response::{Response, ResponseCode};
 
+use super::client_handler::process_request;
+
 pub async fn serve(config: &Config) {
     paris::info!("Started serving [{}:{}]: {}", config.host, config.port, config.path);
 
@@ -24,18 +26,20 @@ pub async fn serve(config: &Config) {
 
         paris::info!("New connection: {:?}", sock_addr);
 
+        let config_clone = config.clone();
         tokio::spawn(async {
-            process(sock).await;
+            // TODO: cloning bad
+            process(config_clone, sock).await;
         });
     }
 
 }
 
-async fn process(mut sock: TcpStream) {
+async fn process(config: Config, mut sock: TcpStream) {
 
-    let mut buf = stream_utils::read_to_bytes(&mut sock).await;
+    let buf = stream_utils::read_to_bytes(&mut sock).await;
 
-    let resp = handle_request(buf).await;
+    let resp = handle_request(buf, &config).await;
 
     match stream_utils::write_bytes(&mut sock, resp.build().as_bytes()).await {
         Err(s) => {
@@ -46,26 +50,22 @@ async fn process(mut sock: TcpStream) {
 
 }
 
-async fn handle_request(buf: Vec<u8>) -> Response {
+async fn handle_request(buf: Vec<u8>, config: &Config) -> Response {
 
-    /* let req = match request::Request::parse(& buf) {
-        Err(ee) => {
-            // TODO: send error response here
-        }, 
-        Ok(r) => (),
-    };
-*/
-    let req_res = request::Request::parse(&buf);
+    let req_res = request::Request::parse(&buf, config);
 
     // TODO: logging of request
     
     let resp: Response;
 
-    if let Err(ee) = req_res {
-        resp = Response::new(ee.err, ee.expl);
-    }
-    else {
-        resp = Response::new(ResponseCode::OK_200, String::from("200 Okiew"));
+    match req_res {
+        Err(ee) => { 
+            // TODO: add better html for error
+            resp = Response::new(ee.err, ee.expl);
+        },
+        Ok(req) => {
+            resp = process_request(req, config).await;
+        }
     }
 
     resp

@@ -10,10 +10,10 @@ mod server;
 async fn main() {
 
     // Get the config
-    let config = cliparser::parse();
+    let mut config = cliparser::parse();
 
     // Verify the config
-    if let Err(e) = cliparser::verify_config(&config) {
+    if let Err(e) = cliparser::verify_config(&mut config) {
        paris::error!("{e}");
        process::exit(1);
     }

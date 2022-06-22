@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::server::response::ResponseCode;
+use crate::{server::response::ResponseCode, cliparser::Config};
 use crate::utils::err_and_expl::ErrAndExpl;
 use crate::utils::path_utils;
 
@@ -12,7 +12,7 @@ impl Request {
     // TODO: parse content reqeust headers
     // TODO: print info about the request parsing
     /// Parses and verifies the request
-    pub fn parse(buf: &[u8]) -> Result<Request, ErrAndExpl<ResponseCode>> {
+    pub fn parse(buf: &[u8], config: &Config) -> Result<Request, ErrAndExpl<ResponseCode>> {
         let buf_str = match std::str::from_utf8(buf) {
             Ok(res) => res,
             Err(_) => { 
@@ -54,7 +54,7 @@ impl Request {
             Some(p) => p,
         };
         // Verifies the path
-        match path_utils::verify_server_relative_path(req_path) {
+        match path_utils::verify_server_relative_path(req_path, config) {
             false => {
                 return Err(ErrAndExpl::new(ResponseCode::NOT_FOUND_404,
                                        format!("Invalid path: {req_path}")));
