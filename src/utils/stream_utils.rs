@@ -1,15 +1,5 @@
 use tokio::{net::TcpStream, io::{AsyncReadExt, AsyncWriteExt}};
 
-// TODO: return error on failed to read
-pub async fn read_to_str(sock: &mut TcpStream) -> String {
-    
-    let mut read = String::new();
-
-    sock.read_to_string(&mut read).await;
-
-    read
-}
-
 pub async fn read_to_bytes(sock: &mut TcpStream) -> Vec<u8> {
     let mut buf = Vec::new();
 
@@ -35,22 +25,6 @@ pub async fn read_to_bytes(sock: &mut TcpStream) -> Vec<u8> {
 pub async fn write_bytes(sock: &mut TcpStream, buf: &[u8]) -> Result<(), String> {
 
     match sock.write(&buf[..]).await {
-        Err(err) => return Err(format!("Failed to write: {}", err)),
-        Ok(_) => {},
-    };
-
-    match sock.flush().await {
-        Err(err) => return Err(format!("Failed to flush socket: {}", err)),
-        Ok(_) => {},
-    }
-
-    Ok(())
-
-}
-
-pub async fn write_string(sock: &mut TcpStream, buf: &str) -> Result<(), String> {
-
-    match sock.write(&buf.as_bytes()[..]).await {
         Err(err) => return Err(format!("Failed to write: {}", err)),
         Ok(_) => {},
     };

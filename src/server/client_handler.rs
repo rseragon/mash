@@ -26,18 +26,18 @@ pub async fn process_request(req: Request, config: &Config) -> Response {
 
     // given path is a directory
     if Path::new(&path_str).is_dir() {
-        resp_code = OK_200;
+        resp_code = Ok200;
 
         resp_str = dir_listing(&path_str).as_bytes().to_vec();
     } else { // is a file
         match read_file(&path_str).await {
             Err(e) => {
                 // TODO: add better html for error
-                resp_code = NOT_FOUND_404;
+                resp_code = NotFound404;
                 resp_str = e.as_bytes().to_vec();
             }
             Ok(s) => {
-                resp_code = OK_200;
+                resp_code = Ok200;
                 resp_str = s;
             }
         };
@@ -54,14 +54,14 @@ pub async fn process_request(req: Request, config: &Config) -> Response {
 async fn read_file(path: &String) -> Result<Vec<u8>, String> {
     let mut file = match tokio::fs::File::open(path).await {
         Ok(f) => f,
-        Err(err) => return Err(String::from("Failed to open file")),
+        Err(err) => return Err(format!("Failed to open file: {}", err)),
     };
 
     let mut buf = Vec::new();
 
     match file.read_to_end(&mut buf).await {
         Ok(_) => {},
-        Err(err) => return Err(String::from("Failed to read file")),
+        Err(err) => return Err(format!("Failed to read file: {}", err)),
     }
 
     Ok(buf)

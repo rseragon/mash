@@ -33,13 +33,13 @@ impl Response {
 
         // EG: (1) 200 OK 
         let code_str = match self.status_code {
-            OK_200 => "200 OK",
-            BAD_REQUEST_400 => "400 Bad Request",
-            FORBIDDEN_403 => "403 Forbidden",
-            NOT_FOUND_404 => "404 Not Found",
-            INTERNAL_SERVER_ERROR_500 => "500 Internal Server Error",
-            NOT_IMPLEMENTED_501 => "501 Not Implemented",
-            HTTP_VERSION_NOT_SUPPORTED_505 => "505 HTTP Version Not Supported",
+            Ok200 => "200 OK",
+            BadRequest400 => "400 Bad Request",
+            Forbidden403 => "403 Forbidden",
+            NotFound404 => "404 Not Found",
+            InternalServerError500 => "500 Internal Server Error",
+            NotImplemented501 => "501 Not Implemented",
+            HttpVersionNotSupported505 => "505 HTTP Version Not Supported",
         };
 
 

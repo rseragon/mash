@@ -15,7 +15,7 @@ impl Request {
         let buf_str = match std::str::from_utf8(buf) {
             Ok(res) => res,
             Err(_) => { 
-                return Err(ErrAndExpl::new(ResponseCode::BAD_REQUEST_400, 
+                return Err(ErrAndExpl::new(ResponseCode::BadRequest400, 
                                            String::from("Invalid reqeust encoding: Has to be UTF-8")));
             },
         };
@@ -29,7 +29,7 @@ impl Request {
         // (1) Method
         let method_str = match iter.next() {
             None => {
-                return Err(ErrAndExpl::new(ResponseCode::BAD_REQUEST_400,
+                return Err(ErrAndExpl::new(ResponseCode::BadRequest400,
                                            String::from("Illegal request format")));
             },
             Some(met) => met,
@@ -40,14 +40,14 @@ impl Request {
             method = RequestType::GET;
         }
         else {
-            return Err(ErrAndExpl::new(ResponseCode::NOT_IMPLEMENTED_501,
+            return Err(ErrAndExpl::new(ResponseCode::NotImplemented501,
                                        format!("Unkown request type: {method_str}")));
         }
 
         // (2) request path
         let req_path = match iter.next() {
             None => {
-                return Err(ErrAndExpl::new(ResponseCode::BAD_REQUEST_400,
+                return Err(ErrAndExpl::new(ResponseCode::BadRequest400,
                                            String::from("Illegal path format: request doesn't contain path")));
             },
             Some(p) => p,
@@ -67,7 +67,7 @@ impl Request {
         // (3) HTTP version
         let version_str = match iter.next() {
             None => {
-                return Err(ErrAndExpl::new(ResponseCode::BAD_REQUEST_400,
+                return Err(ErrAndExpl::new(ResponseCode::BadRequest400,
                                            String::from("Illegal version format: request HTTP version not found")));
             },
             Some(v) => v,
@@ -75,13 +75,13 @@ impl Request {
         let version: HttpVersion;
 
         if version_str == "HTTP/1.1" {
-            version = HttpVersion::HTTP_1_1;
+            version = HttpVersion::Http1_1;
         }
         else if version_str == "HTTP/1.0" {
-            version = HttpVersion::HTTP_1_0;
+            version = HttpVersion::Http1_0;
         }
         else {
-            return Err(ErrAndExpl::new(ResponseCode::HTTP_VERSION_NOT_SUPPORTED_505,
+            return Err(ErrAndExpl::new(ResponseCode::HttpVersionNotSupported505,
                                        format!("HTTP version '{version_str}' not supported")));
         }
 

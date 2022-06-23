@@ -13,7 +13,7 @@ pub async fn serve(config: &Config) {
     let addr: &str = &format!("{}:{}", config.host, config.port);
     
     let socket = TcpListener::bind(addr).await.unwrap_or_else(|err| {
-        paris::error!("Binding to port {} failed!", config.port);
+        paris::error!("Binding to port {} failed!: {}", config.port, err);
         std::process::exit(-1);
     });
 
@@ -40,9 +40,16 @@ async fn process(config: Config, mut sock: TcpStream) {
 
     let mut resp = handle_request(buf, &config).await;
 
-    // TODO
-    resp.send_resp(&mut sock).await;
-
+    match resp.send_resp(&mut sock).await {
+        Ok(_) => {},
+        Err(e) => {
+            let peer_addr = match sock.peer_addr() {
+                Ok(saddr) => saddr.to_string(),
+                Err(_) => "Failed to get peer's socket addr".to_string(),
+            };
+            paris::error!("Failed to respond to request {}: {}", peer_addr, e);
+        }
+    }
 }
 
 async fn handle_request(buf: Vec<u8>, config: &Config) -> Response {

@@ -17,7 +17,7 @@ pub fn server_cwd_path(path_str: &str, config: &Config) -> Result<String, ErrAnd
     use ResponseCode::*;
 
     if path_str.len() < 1 {
-        return Err(ErrAndExpl::new(BAD_REQUEST_400, 
+        return Err(ErrAndExpl::new(BadRequest400, 
                                    format!("Invalid path")));
     }
 
@@ -31,7 +31,7 @@ pub fn server_cwd_path(path_str: &str, config: &Config) -> Result<String, ErrAnd
     pth.push(req_path_str); // The requested path
 
     if !pth.exists() {
-        return Err(ErrAndExpl::new(NOT_FOUND_404,
+        return Err(ErrAndExpl::new(NotFound404,
                                    format!("Path not found: {}", path_str)));
     }
 
@@ -53,12 +53,12 @@ pub fn verify_path(req_path: &PathBuf, config: &Config) -> Result<(), ResponseCo
     // TODO: return ErrAndExpl
     let cwd_pth = match Path::new(&config.path).canonicalize() {
         Ok(p) => p,
-        Err(_) => return Err(FORBIDDEN_403),
+        Err(_) => return Err(Forbidden403),
     };
 
     let req_path = match req_path.canonicalize() {
         Ok(p) => p,
-        Err(_) => return Err(FORBIDDEN_403),
+        Err(_) => return Err(Forbidden403),
     };
 
     // checks the path ancestors
@@ -70,7 +70,7 @@ pub fn verify_path(req_path: &PathBuf, config: &Config) -> Result<(), ResponseCo
     let secure = cwd_ancestors.iter().all(|dir| req_ancestors.contains(dir));
 
     if !secure {
-        return Err(FORBIDDEN_403);
+        return Err(Forbidden403);
     }
 
     Ok(())

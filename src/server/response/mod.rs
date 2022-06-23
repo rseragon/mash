@@ -5,15 +5,15 @@ mod resp;
 #[derive(Debug)]
 pub enum ResponseCode {
     // Okeay!!
-    OK_200,
+    Ok200,
 
     // Errors :(
-    BAD_REQUEST_400,
-    FORBIDDEN_403,
-    NOT_FOUND_404,
-    INTERNAL_SERVER_ERROR_500,
-    NOT_IMPLEMENTED_501,
-    HTTP_VERSION_NOT_SUPPORTED_505,
+    BadRequest400,
+    Forbidden403,
+    NotFound404,
+    InternalServerError500,
+    NotImplemented501,
+    HttpVersionNotSupported505,
 }
 
 #[derive(Debug)]

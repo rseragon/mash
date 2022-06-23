@@ -8,8 +8,8 @@ pub enum RequestType {
 
 #[derive(Debug)]
 pub enum HttpVersion {
-    HTTP_1_0, // HTTP/1.0
-    HTTP_1_1, // HTTP/1.1
+    Http1_0, // HTTP/1.0
+    Http1_1, // HTTP/1.1
 }
 
 #[derive(Debug)]
