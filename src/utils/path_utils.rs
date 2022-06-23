@@ -49,10 +49,18 @@ pub fn server_cwd_path(path_str: &str, config: &Config) -> Result<String, ErrAnd
 // Check if you have read rights on that path
 pub fn verify_path(req_path: &PathBuf, config: &Config) -> Result<(), ResponseCode> {
     // Get the canocnical paths to check the ancestors
+    use ResponseCode::*;
 
-    // TODO
-    let cwd_pth = Path::new(&config.path).canonicalize().unwrap();
-    let req_path = req_path.canonicalize().unwrap();
+    // TODO: return ErrAndExpl
+    let cwd_pth = match Path::new(&config.path).canonicalize() {
+        Ok(p) => p,
+        Err(_) => return Err(FORBIDDEN_403),
+    };
+
+    let req_path = match req_path.canonicalize() {
+        Ok(p) => p,
+        Err(_) => return Err(FORBIDDEN_403),
+    };
 
     // checks the path ancestors
     // If the ancestors are diff, that means the request is trying
@@ -63,8 +71,47 @@ pub fn verify_path(req_path: &PathBuf, config: &Config) -> Result<(), ResponseCo
     let secure = cwd_ancestors.iter().all(|dir| req_ancestors.contains(dir));
 
     if !secure {
-        return Err(ResponseCode::FORBIDDEN_403);
+        return Err(FORBIDDEN_403);
     }
 
     Ok(())
+}
+
+
+#[cfg(test)] 
+mod tests {
+    #[test]
+    fn check_ancestor_path_valid() {
+        use super::*;
+
+        let correct_path = std::path::Path::new("/tmp/").to_path_buf();
+
+
+        let config = Config {
+            host: format!(""),
+            port: 100,
+            path: format!("/tmp"),
+        };
+
+        assert_eq!(verify_path(&correct_path, &config).unwrap(), ());
+    }
+
+    #[test]
+    #[should_panic]
+    fn check_ancestor_path_invalid() {
+        use super::*;
+
+        let wrong_path = std::path::Path::new("/tmp/asdf").to_path_buf();
+
+
+        let config = Config {
+            host: format!(""),
+            port: 100,
+            path: format!("/tmp"),
+        };
+
+        // Penik!!
+        assert_ne!(verify_path(&wrong_path, &config).unwrap(), ());
+    }
+
 }
