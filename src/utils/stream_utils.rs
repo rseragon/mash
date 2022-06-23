@@ -1,7 +1,6 @@
-use std::os::unix::prelude::OsStrExt;
-
 use tokio::{net::TcpStream, io::{AsyncReadExt, AsyncWriteExt}};
 
+// TODO: return error on failed to read
 pub async fn read_to_str(sock: &mut TcpStream) -> String {
     
     let mut read = String::new();

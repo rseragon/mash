@@ -1,5 +1,4 @@
 /// Path utils
-
 use paris;
 use crate::cliparser::Config;
 

@@ -1,10 +1,9 @@
-use tokio::{net::{TcpListener, TcpStream}, io::{AsyncReadExt, AsyncWriteExt}};
-use std::collections::HashMap;
+use tokio::net::{TcpListener, TcpStream};
 
 use crate::cliparser::Config;
 use crate::utils::stream_utils;
 use crate::server::request as request;
-use crate::server::response::{Response, ResponseCode};
+use crate::server::response::Response;
 
 use super::client_handler::process_request;
 

@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use crate::{server::response::ResponseCode, cliparser::Config};
 use crate::utils::err_and_expl::ErrAndExpl;
-use crate::utils::path_utils;
 
 use super::{Request, RequestType, HttpVersion};
 
