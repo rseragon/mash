@@ -20,5 +20,5 @@ pub enum ResponseCode {
 pub struct Response {
     status_code: ResponseCode,
     headers: HashMap<String, String>,
-    body: String
+    body: String // This should be bytes
 }

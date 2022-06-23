@@ -58,6 +58,7 @@ async fn handle_request(buf: Vec<u8>, config: &Config) -> Response {
     
     let resp: Response;
 
+    // Check if request is okay
     match req_res {
         Err(ee) => { 
             // TODO: add better html for error

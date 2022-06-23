@@ -46,8 +46,11 @@ pub fn server_cwd_path(path_str: &str, config: &Config) -> Result<String, ErrAnd
 
 }
 
+// Check if you have read rights on that path
 pub fn verify_path(req_path: &PathBuf, config: &Config) -> Result<(), ResponseCode> {
     // Get the canocnical paths to check the ancestors
+
+    // TODO
     let cwd_pth = Path::new(&config.path).canonicalize().unwrap();
     let req_path = req_path.canonicalize().unwrap();
 
