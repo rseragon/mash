@@ -7,3 +7,4 @@ edition = "2021"
 clap = { version = "3.2.5", features = ["derive"] }
 tokio = { version = "1.19.2", features = ["full"] }
 paris = { version = "1.5", features = ["timestamps", "macros"] }
+content_inspector = "0.2.4"

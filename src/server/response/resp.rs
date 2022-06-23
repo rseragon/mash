@@ -1,8 +1,10 @@
+use tokio::net::TcpStream;
 use super::{Response, ResponseCode};
 use std::collections::HashMap;
+use crate::utils::stream_utils;
 
 impl Response {
-    pub fn new(status_code: ResponseCode, body: String) -> Response {
+    pub fn new(status_code: ResponseCode, body: Vec<u8>) -> Response {
         Response {
             status_code,
             headers: HashMap::new(),
@@ -14,14 +16,19 @@ impl Response {
         self.status_code = code;
     }
 
-    pub fn set_headers(&mut self, headers: HashMap<String, String>) {
+    pub fn set_headers(&mut self, headers: HashMap<&'static str, String>) {
         self.headers = headers;
     }
-    pub fn set_body(&mut self, body: String) {
+    pub fn set_body_array(&mut self, body: &[u8]) {
+        let body = body.to_vec();
         self.body = body;
     }
 
-    pub fn build(&self) -> String {
+    pub fn set_body_vec(&mut self, body: Vec<u8>) {
+        self.body = body;
+    }
+
+    pub fn build_header(&mut self) -> String {
         use ResponseCode::*;
 
         // EG: (1) 200 OK 
@@ -36,15 +43,18 @@ impl Response {
         };
 
 
-        // EG: (2) Connection: Keep-Alive
+        // EG: (2) Connection: Keep-Alive, Content-Length
+        // Calcualte few headers
+        
+        /* TODO: Setting content len is mearking files not to download
+        let body_size = self.body.len().to_string();
+        self.headers.insert("Content-Length", body_size);
+        */
+
         let mut headers_str = String::new();
         for (header, val) in self.headers.iter() {
             headers_str.push_str(&format!("{}: {}\r\n", header, val)[..]);
         }
-
-        // EG: (3) Content-Length
-        let body_size = self.body.as_bytes().len();
-        let content_len = format!("Content-Length: {}", body_size);
 
         /* Response format
          * EG:
@@ -54,16 +64,15 @@ impl Response {
          * Content-Length: (len)
          *
          * (body)
+         * // Content-Length and body will be sent later
          */
 
-        // {}{} is concatinated as, the headers_str will leave \r\n at the end
+        // the headers_str will leave \r\n at the end
         // this will be continued by Content-Length
-        // \r\n\r\n is cuz headers and body should have 1 line space
         
         let response = format!("\
         {} {}\r\n\
-        {}{}\r\n\r\n\
-        {}", "HTTP/1.1", code_str, headers_str, content_len, self.body);
+        {}\r\n", "HTTP/1.1", code_str, headers_str);
 
         // TODO: Shoulw I hard code HTTP/1.1 ?
 
@@ -71,8 +80,30 @@ impl Response {
         // to all requests pertaining lower than 1.1
         // https://stackoverflow.com/questions/57334986/why-is-http-version-number-presented-in-both-a-request-line-and-a-status-line
 
-
         response
+    }
+
+
+    pub async fn send_resp(&mut self, mut sock: &mut TcpStream) -> Result<(), String> {
+
+        // send header
+        match stream_utils::write_bytes(&mut sock, self.build_header().as_bytes()).await {
+            Err(e) => {
+                paris::error!("{}", e);
+            },
+            Ok(_) => {}, // TODO
+        };
+
+
+        // send body
+        match stream_utils::write_bytes(&mut sock, &self.body[..]).await {
+            Err(e) => {
+                paris::error!("{}", e);
+            },
+            Ok(_) => {}, // TODO
+        };
+
+        Ok(())
     }
 }
 

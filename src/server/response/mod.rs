@@ -19,6 +19,6 @@ pub enum ResponseCode {
 #[derive(Debug)]
 pub struct Response {
     status_code: ResponseCode,
-    headers: HashMap<String, String>,
-    body: String // This should be bytes
+    headers: HashMap<&'static str, String>,
+    body: Vec<u8> // This should be bytes
 }

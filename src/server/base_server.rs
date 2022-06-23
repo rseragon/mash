@@ -39,14 +39,10 @@ async fn process(config: Config, mut sock: TcpStream) {
 
     let buf = stream_utils::read_to_bytes(&mut sock).await;
 
-    let resp = handle_request(buf, &config).await;
+    let mut resp = handle_request(buf, &config).await;
 
-    match stream_utils::write_bytes(&mut sock, resp.build().as_bytes()).await {
-        Err(s) => {
-            paris::error!("{}", s);
-        },
-        Ok(_) => {}, // TODO
-    };
+    // TODO
+    resp.send_resp(&mut sock).await;
 
 }
 
@@ -62,9 +58,10 @@ async fn handle_request(buf: Vec<u8>, config: &Config) -> Response {
     match req_res {
         Err(ee) => { 
             // TODO: add better html for error
-            resp = Response::new(ee.err, ee.expl);
+            resp = Response::new(ee.err, ee.expl.as_bytes().to_vec());
         },
         Ok(req) => {
+            paris::log!("{:?} {}", req.req_type, req.path);
             resp = process_request(req, config).await;
         }
     }
