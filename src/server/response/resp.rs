@@ -28,6 +28,7 @@ impl Response {
         let code_str = match self.status_code {
             OK_200 => "200 OK",
             BAD_REQUEST_400 => "400 Bad Request",
+            FORBIDDEN_403 => "403 Forbidden",
             NOT_FOUND_404 => "404 Not Found",
             INTERNAL_SERVER_ERROR_500 => "500 Internal Server Error",
             NOT_IMPLEMENTED_501 => "501 Not Implemented",

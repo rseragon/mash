@@ -54,6 +54,7 @@ impl Request {
             Some(p) => p,
         };
         // Verifies the path
+        /* will be done by client_handler
         match path_utils::verify_server_relative_path(req_path, config) {
             false => {
                 return Err(ErrAndExpl::new(ResponseCode::NOT_FOUND_404,
@@ -61,6 +62,7 @@ impl Request {
             },
             true => {}
         }
+        */
 
 
         // (3) HTTP version

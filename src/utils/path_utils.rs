@@ -3,22 +3,65 @@
 use paris;
 use crate::cliparser::Config;
 
-/// Verifies the path relative the working directory of the server
-pub fn verify_server_relative_path(path_str: &str, config: &Config) -> bool {
+use crate::server::response::ResponseCode;
+use super::err_and_expl::ErrAndExpl;
+use std::path::{Path, PathBuf};
+
+
+/// Checks if the path is valid and returns the path w.r.t to the
+/// servers CWD
+/// Checks
+///     - If path exists
+///     - Access control (does the use have the acccess to path?)
+pub fn server_cwd_path(path_str: &str, config: &Config) -> Result<String, ErrAndExpl<ResponseCode>> {
+
+    use ResponseCode::*;
 
     if path_str.len() < 1 {
-        return false;
+        return Err(ErrAndExpl::new(BAD_REQUEST_400, 
+                                   format!("Invalid path")));
     }
 
+    let mut req_path_str = path_str.to_string(); 
+    req_path_str.remove(0); // To move the `/` at the start
+                            // Eg: /index.html -> index.html
+
     let mut pth = std::path::PathBuf::new();
-    pth.push(&config.path);
 
-    let mut path_str = path_str.to_string();
-    path_str.remove(0);
+    pth.push(&config.path); // The server path
+    pth.push(req_path_str); // The requested path
 
-    pth.push(path_str);
+    if !pth.exists() {
+        return Err(ErrAndExpl::new(NOT_FOUND_404,
+                                   format!("Path not found: {}", path_str)));
+    }
 
-    paris::success!("Requested path: {}", pth.display());
+    if let Err(code) = verify_path(&pth, config) {
 
-    pth.exists()
+        return Err(ErrAndExpl::new(code,
+                                   format!("Invalid path requested: {}", path_str)));
+    }
+
+    Ok(pth.display().to_string())
+
+}
+
+pub fn verify_path(req_path: &PathBuf, config: &Config) -> Result<(), ResponseCode> {
+    // Get the canocnical paths to check the ancestors
+    let cwd_pth = Path::new(&config.path).canonicalize().unwrap();
+    let req_path = req_path.canonicalize().unwrap();
+
+    // checks the path ancestors
+    // If the ancestors are diff, that means the request is trying
+    // to acces files out of the CWD
+    let req_ancestors: Vec<_> = req_path.ancestors().collect();
+    let cwd_ancestors: Vec<_>  = cwd_pth.ancestors().collect();
+
+    let secure = cwd_ancestors.iter().all(|dir| req_ancestors.contains(dir));
+
+    if !secure {
+        return Err(ResponseCode::FORBIDDEN_403);
+    }
+
+    Ok(())
 }
