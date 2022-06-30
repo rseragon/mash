@@ -1,3 +1,4 @@
+use std::os::unix::prelude::MetadataExt;
 use std::path::Path;
 
 use tokio::io::AsyncReadExt;
@@ -42,9 +43,21 @@ pub async fn process_request(req: Request, config: &Config) -> Response {
             }
         };
     }
+    
+    // TODO: Set other headers
 
-    // TODO: Set Content-Type
-    // resp_header.insert("Content-Type", get_mime_type(&path_str).to_string());
+    if let Ok(mime_type) = get_mime_type(&path_str)  {
+        resp_header.insert("Content-Type", mime_type);
+        // Set the file size for known mime types
+        // so that browser can read it
+
+        let size = std::fs::metadata(&path_str).unwrap().size();
+        resp_header.insert("Content-Length", size.to_string());
+    }
+    // Make sure the connection is not cut off
+    resp_header.insert("Keep-Alive", "timeout=5, max=1000".to_string()); // TODO: IDK this
+    resp_header.insert("Connection", "Keep-Alive".to_string());
+
     let mut resp = Response::new(resp_code, resp_str);
     resp.set_headers(resp_header);
 
@@ -101,23 +114,19 @@ fn dir_listing(path_str: &String) -> String {
     head
 }
 
-fn get_mime_type(path_str: &String) -> &'static str {
+fn get_mime_type(path_str: &String) -> Result<String, ()> {
 
-    
-    let parts : Vec<&str> = path_str.split('.').collect();
+    let guess = mime_guess::from_path(path_str);
 
-    let res = match parts.last() {
-            Some(v) =>
-                match *v {
-                    "png" => "image/png",
-                    "jpg" => "image/jpeg",
-                    "json" => "application/json",
-                    "html" => "text/html; charset=UTF-8",
-                    "htm" => "text/html; charset=UTF-8",
-                    &_ => "text/plain; charset=UTF-8",
-                },
-            None => "text/plain",
-        };
-    
-    res
+    // Didn't find mime type
+    if guess.is_empty() {
+        paris::error!("Unabled to determine MimeType: {}", path_str);
+        return Err(());
+    }
+
+    // TODO: is okay for now, but should consider others
+    let mime_type = guess.first_raw().unwrap();
+
+    return Ok(String::from(mime_type));
+
 }

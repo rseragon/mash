@@ -1,3 +1,4 @@
+use tokio::io::AsyncWriteExt;
 use tokio::net::{TcpListener, TcpStream};
 
 use crate::cliparser::Config;
@@ -50,6 +51,10 @@ async fn process(config: Config, mut sock: TcpStream) {
             paris::error!("Failed to respond to request {}: {}", peer_addr, e);
         }
     }
+
+    sock.flush().await.unwrap_or_else(|err| {
+        paris::error!("Failed to flush socket: {}", err);
+    });
 }
 
 async fn handle_request(buf: Vec<u8>, config: &Config) -> Response {
