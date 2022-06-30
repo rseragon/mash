@@ -1,5 +1,6 @@
 /// Path utils
 use paris;
+use urlencoding;
 use crate::cliparser::Config;
 
 use crate::server::response::ResponseCode;
@@ -27,10 +28,14 @@ pub fn server_cwd_path(path_str: &str, config: &Config) -> Result<String, ErrAnd
 
     let mut pth = std::path::PathBuf::new();
 
+    // Decoes the uri path string EG: ( this%20is%20some%20string -> this is some string)
+    let req_path_str = urlencoding::decode(&req_path_str).unwrap().to_string();
+
     pth.push(&config.path); // The server path
     pth.push(req_path_str); // The requested path
 
     if !pth.exists() {
+        paris::warn!("Requested path not found: {}", pth.display());
         return Err(ErrAndExpl::new(NotFound404,
                                    format!("Path not found: {}", path_str)));
     }

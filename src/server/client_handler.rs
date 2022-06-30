@@ -75,8 +75,10 @@ fn dir_listing(path_str: &String) -> String {
         // which is the relatvie path to the server not the browser
         let dir_show = p.unwrap().path().display().to_string();
         let mut dir_href = dir_show.clone();
-        dir_href.remove(0);
-        
+        dir_href.remove(0);  
+        let dir_show = dir_show.split("/").last().unwrap(); // gets the last part of path 
+                                                            // Eg: (/a/b/c/d -> d)
+         
         dir_list.push_str(&format!("<li><a href='{}'>{}</a></li>\n", dir_href, dir_show));
     }
 

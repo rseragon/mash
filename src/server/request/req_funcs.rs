@@ -52,6 +52,7 @@ impl Request {
             },
             Some(p) => p,
         };
+        paris::info!("Path requested: {}", req_path);
         // Verifies the path
         /* will be done by client_handler
         match path_utils::verify_server_relative_path(req_path, config) {

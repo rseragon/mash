@@ -149,6 +149,7 @@ dependencies = [
  "content_inspector",
  "paris",
  "tokio",
+ "urlencoding",
 ]
 
 [[package]]
@@ -376,6 +377,12 @@ name = "unicode-ident"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5bd2fe26506023ed7b5e1e315add59d6f584c621d037f9368fea9cfb988f368c"
+
+[[package]]
+name = "urlencoding"
+version = "2.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "68b90931029ab9b034b300b797048cf23723400aa757e8a2bfb9d748102f9821"
 
 [[package]]
 name = "version_check"
