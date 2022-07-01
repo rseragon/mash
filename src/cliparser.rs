@@ -1,20 +1,20 @@
 use clap::Parser;
 
-/// Cli parser 
+/// A minimal asynchronous static http webserver written in rust
 #[derive(Parser, Debug)]
 #[clap(version, about, long_about = None)]
 pub struct Config {
-    /// Host ip of the server
-    #[clap(value_parser)]
-    pub host: String,
-
-    /// Port of the server
-    #[clap(value_parser)]
-    pub port: u16,
-
     /// Path for webserver to run (Defaults to current working directory)
     #[clap(value_parser, default_value_t = String::from("."))]
     pub path: String,
+
+    /// Host IP of the server 
+    #[clap(short, long, value_parser, default_value_t = String::from("0.0.0.0"))]
+    pub host: String,
+
+    /// Port for the server 
+    #[clap(short, long, value_parser, default_value_t = 8080)]
+    pub port: u16,
 
 }
 
