@@ -96,7 +96,7 @@ fn dir_listing(path_str: &String) -> String {
     }
 
     let head = format!(
-        "<!DOCTYPE HTML PUBLIC>\n\
+        "<!DOCTYPE html>\n\
 <html>\n\
 <head>\n\
 <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>\n\

@@ -24,7 +24,7 @@ pub async fn read_to_bytes(sock: &mut TcpStream) -> Vec<u8> {
 
 pub async fn write_bytes(sock: &mut TcpStream, buf: &[u8]) -> Result<(), String> {
 
-    match sock.write(&buf[..]).await {
+    match sock.write_all(buf).await {
         Err(err) => return Err(format!("Failed to write: {}", err)),
         Ok(_) => {},
     };

@@ -94,6 +94,8 @@ impl Response {
             Ok(_) => {}, // TODO
         };
 
+        // Sleep for a sec
+        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
 
         // send body
         match stream_utils::write_bytes(&mut sock, &self.body[..]).await {
@@ -102,6 +104,8 @@ impl Response {
             },
             Ok(_) => {}, // TODO
         };
+
+        // TODO: Need to stop here and confirm that the file is sent
 
         Ok(())
     }
