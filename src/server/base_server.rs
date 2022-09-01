@@ -5,6 +5,7 @@ use crate::cliparser::Config;
 use crate::utils::stream_utils;
 use crate::server::request as request;
 use crate::server::response::Response;
+use crate::utils::html_builder;
 
 use super::client_handler::process_request;
 
@@ -69,7 +70,9 @@ async fn handle_request(buf: Vec<u8>, config: &Config) -> Response {
     match req_res {
         Err(ee) => { 
             // TODO: add better html for error
-            resp = Response::new(ee.err, ee.expl.as_bytes().to_vec());
+            // resp = Response::new(ee.err, ee.expl.as_bytes().to_vec());
+            let body = html_builder::error_page_builder(&ee.err, &ee.expl).as_bytes().to_vec();
+            return Response::new(ee.err, body);
         },
         Ok(req) => {
             paris::log!("{:?} {}", req.req_type, req.path);

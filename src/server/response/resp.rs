@@ -29,18 +29,9 @@ impl Response {
     }
 
     pub fn build_header(&mut self) -> String {
-        use ResponseCode::*;
 
         // EG: (1) 200 OK 
-        let code_str = match self.status_code {
-            Ok200 => "200 OK",
-            BadRequest400 => "400 Bad Request",
-            Forbidden403 => "403 Forbidden",
-            NotFound404 => "404 Not Found",
-            InternalServerError500 => "500 Internal Server Error",
-            NotImplemented501 => "501 Not Implemented",
-            HttpVersionNotSupported505 => "505 HTTP Version Not Supported",
-        };
+        let code_str = self.status_code.to_string();
 
 
         // EG: (2) Connection: Keep-Alive, Content-Length
@@ -104,8 +95,6 @@ impl Response {
             },
             Ok(_) => {}, // TODO
         };
-
-        // TODO: Need to stop here and confirm that the file is sent
 
         Ok(())
     }

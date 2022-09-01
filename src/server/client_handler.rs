@@ -9,6 +9,7 @@ use crate::server::request::Request;
 use crate::server::response::Response;
 use crate::server::response::ResponseCode;
 use crate::utils::path_utils::server_cwd_path;
+use crate::utils::html_builder;
 
 pub async fn process_request(req: Request, config: &Config) -> Response {
     use crate::server::response::ResponseCode::*;
@@ -17,7 +18,10 @@ pub async fn process_request(req: Request, config: &Config) -> Response {
     let path_str = match server_cwd_path(&req.path, config) {
         Ok(p) => p,
         Err(ee) => {
-            return Response::new(ee.err, ee.expl.as_bytes().to_vec());
+            // return Response::new(ee.err, ee.expl.as_bytes().to_vec());
+            // let body = html_builder::error_page_builder(&ee.err, &ee.expl).as_bytes().to_vec();
+            let body = html_builder::error_page_builder(&ee.err, &ee.expl).as_bytes().to_vec();
+            return Response::new(ee.err, body);
         }
     };
 
@@ -35,7 +39,8 @@ pub async fn process_request(req: Request, config: &Config) -> Response {
             Err(e) => {
                 // TODO: add better html for error
                 resp_code = NotFound404;
-                resp_str = e.as_bytes().to_vec();
+                // resp_str = e.as_bytes().to_vec();
+                resp_str = html_builder::error_page_builder(&resp_code, &e).as_bytes().to_vec();
             }
             Ok(s) => {
                 resp_code = Ok200;

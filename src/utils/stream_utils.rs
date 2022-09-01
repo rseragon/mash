@@ -8,9 +8,6 @@ pub async fn read_to_bytes(sock: &mut TcpStream) -> Vec<u8> {
         match sock.read(&mut curr_buf[..]).await {
             Ok(0) => break,
             Ok(n) => {
-                if n == 0 {
-                    break;
-                }
                 buf.extend_from_slice(&mut curr_buf[0..n]);
             },
             Err(_) => break, // TODO: error handling
