@@ -55,6 +55,8 @@ impl Request {
         paris::info!("Path requested: {}", req_path);
         // Verifies the path
         /* will be done by client_handler
+         * since the parser has only has to worry about semantics
+         * and and not the correctness of the request
         match path_utils::verify_server_relative_path(req_path, config) {
             false => {
                 return Err(ErrAndExpl::new(ResponseCode::NOT_FOUND_404,

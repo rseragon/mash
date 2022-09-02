@@ -121,6 +121,12 @@ fn dir_listing(path_str: &String) -> String {
 
 fn get_mime_type(path_str: &String) -> Result<String, ()> {
 
+    // directories don't have mime types 
+    // https://stackoverflow.com/questions/18869772/mime-type-for-a-directory
+    if Path::new(path_str).is_dir() {
+        return Err(());
+    }
+
     let guess = mime_guess::from_path(path_str);
 
     // Didn't find mime type

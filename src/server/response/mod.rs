@@ -27,13 +27,13 @@ impl ToString for ResponseCode {
     fn to_string(&self) -> String {
 
         let status = match self {
-            Ok200 => "200 OK",
-            BadRequest400 => "400 Bad Request",
-            Forbidden403 => "403 Forbidden",
-            NotFound404 => "404 Not Found",
-            InternalServerError500 => "500 Internal Server Error",
-            NotImplemented501 => "501 Not Implemented",
-            HttpVersionNotSupported505 => "505 HTTP Version Not Supported",
+            ResponseCode::Ok200 => "200 OK",
+            ResponseCode::BadRequest400 => "400 Bad Request",
+            ResponseCode::Forbidden403 => "403 Forbidden",
+            ResponseCode::NotFound404 => "404 Not Found",
+            ResponseCode::InternalServerError500 => "500 Internal Server Error",
+            ResponseCode::NotImplemented501 => "501 Not Implemented",
+            ResponseCode::HttpVersionNotSupported505 => "505 HTTP Version Not Supported",
         }.to_string();
 
         return status;

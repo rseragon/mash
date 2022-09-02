@@ -22,14 +22,17 @@ pub async fn serve(config: &Config) {
     loop {
         let (sock, sock_addr) = match socket.accept().await {
             Ok((s, sa)) => (s, sa),
-            Err(_) => continue // TODO: print failed statement
+            Err(e) => { 
+                paris::error!("Failed to accept client: {:?}", e);
+                continue;
+            }
         };
 
         paris::info!("New connection: {:?}", sock_addr);
 
+        // TODO: Moving Bad!
         let config_clone = config.clone();
         tokio::spawn(async {
-            // TODO: cloning bad
             process(config_clone, sock).await;
         });
     }
@@ -64,21 +67,19 @@ async fn handle_request(buf: Vec<u8>, config: &Config) -> Response {
 
     // TODO: logging of request
     
-    let resp: Response;
-
     // Check if request is okay
-    match req_res {
+    let resp = match req_res {
         Err(ee) => { 
             // TODO: add better html for error
             // resp = Response::new(ee.err, ee.expl.as_bytes().to_vec());
             let body = html_builder::error_page_builder(&ee.err, &ee.expl).as_bytes().to_vec();
-            return Response::new(ee.err, body);
+            Response::new(ee.err, body)
         },
         Ok(req) => {
             paris::log!("{:?} {}", req.req_type, req.path);
-            resp = process_request(req, config).await;
+            process_request(req, config).await
         }
-    }
+    };
 
     resp
 }
