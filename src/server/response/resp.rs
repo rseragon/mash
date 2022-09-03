@@ -90,7 +90,7 @@ impl Response {
         };
 
         // Sleep for a sec
-        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+        // tokio::time::sleep(std::time::Duration::from_secs(1)).await;
 
         // send body
         match stream_utils::write_bytes(&mut sock, &self.body[..]).await {

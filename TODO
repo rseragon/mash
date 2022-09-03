@@ -1,4 +1,5 @@
 mp4 files are not displayed correctly
 Access rights for a folder or file
 
-FIX: Cuncurrent requests from same origin resulting into 200 OK 
+TODO: fix aboluste dir argument problem
+fix: `` inside `` for javascript text page

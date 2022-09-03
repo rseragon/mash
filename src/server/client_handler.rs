@@ -46,6 +46,9 @@ pub async fn process_request(req: Request, config: &Config) -> Response {
             }
             Ok(s) => {
                 resp_code = Ok200;
+
+                // TODO: Move mimtype checking here
+
                 resp_str = s;
             }
         };
@@ -65,8 +68,10 @@ pub async fn process_request(req: Request, config: &Config) -> Response {
         // Set the file size for known mime types
         // so that browser can read it
 
-        let size = std::fs::metadata(&path_str).unwrap().size();
-        resp_header.insert("Content-Length", size.to_string());
+        // TODO: Need to including this after setting body (There are changes we need somthing else
+        // like mark down will get it's own page, mp4 will get it's own player)
+        // let size = std::fs::metadata(&path_str).unwrap().size();
+        // resp_header.insert("Content-Length", size.to_string());
 
     }
     // Make sure the connection is not cut off
