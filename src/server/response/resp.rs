@@ -28,6 +28,10 @@ impl Response {
         self.body = body;
     }
 
+    pub fn modify_header(&mut self, key: &'static str, value: String) {
+        self.headers.insert(key, value);
+    }
+
     pub fn build_header(&mut self) -> String {
 
         // EG: (1) 200 OK 
