@@ -89,11 +89,25 @@ pub fn dir_list_html(path_str: &String, config: &Config) -> String {
 
     }
 
-    let dir_path = match pathdiff::diff_paths(std::path::Path::new(&path_str), std::path::Path::new(&absolute_path)) {
-        Some(p) => p.display().to_string(),
-        None => path_str.to_string(),
-    };
+    let root_dir_path;
 
+    // Since path_str comes with an extra "/" at the end
+    // TODO: This is a bad algo
+    if path_str == &format!("{}/", config.path) {
+        let a: Vec<&str> = path_str.split("/").collect();
+        if a.is_empty() {
+            root_dir_path = "".to_string();
+        }
+        else {
+            root_dir_path = a[a.len()-2].to_string();
+        }
+    }
+    else {
+        root_dir_path = match pathdiff::diff_paths(std::path::Path::new(&path_str), std::path::Path::new(&absolute_path)) {
+            Some(p) => p.display().to_string(),
+            None => path_str.to_string(),
+        };
+    }
     format!("
 <!DOCTYPE html>\n\
 <html>\n\
@@ -106,7 +120,7 @@ pub fn dir_list_html(path_str: &String, config: &Config) -> String {
 {}\n\
 </ul>\n\
 <hr>\n\
-</body></html>\n", dir_path, dir_path, dirs_str)
+</body></html>\n", root_dir_path, root_dir_path, dirs_str)
 
 }
 
