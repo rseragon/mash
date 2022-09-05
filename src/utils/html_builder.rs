@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::server::response::ResponseCode;
+use crate::{server::response::ResponseCode, cliparser::Config};
 
 /// Returns and error page
 pub fn error_page_builder(code: &ResponseCode, msg: &String) -> String {
@@ -26,19 +26,28 @@ Reason: {}
 }
 
 /// builds dir listing html page
-pub fn dir_list_html(path_str: &String) -> String {
+// TODO: remoe uselss stuff in this algo
+pub fn dir_list_html(path_str: &String, config: &Config) -> String {
 
     // To add to the html
     let mut dirs_str = String::new();
+
+    let absolute_path = match std::fs::canonicalize(path_str) {
+        Ok(p) => p.display().to_string(),
+        Err(_) => path_str.to_string(), // TODO: This is wrong
+                                        // if it failes to get absolute path
+                                        // it shouldn't work
+
+    };
 
     // make a list of dirs which can be used by the 
     // builder to make the build
     // Will look like
     // DIR TO SHOW   -> Points to certain link
     // src/          -> /asdf/bda/src/
-    for p in std::fs::read_dir(&path_str).unwrap() {
+    for p in std::fs::read_dir(&absolute_path).unwrap() {
         // remove(0) is to remove (./ -> /) the `.` which represents current dir
-        // which is the relatvie path to the server not the browser
+        // which is the relative path to the server not the browser
 
         
         // let dir_show = p.unwrap().path().display().to_string();
@@ -47,17 +56,27 @@ pub fn dir_list_html(path_str: &String) -> String {
             Err(_) => continue
         };
 
-        let dir_show = entity_path.path().display().to_string();
+        // Build relative path for href
+        let absolute_entity_pathbuf = match std::fs::canonicalize(entity_path.path()) {
+            Ok(pbuf) => pbuf,
+            Err(_) => continue
+        };
 
-        let mut dir_href = dir_show.clone();
-        dir_href.remove(0);  
+        let relative_path = match pathdiff::diff_paths(absolute_entity_pathbuf.as_path(), std::path::Path::new(&config.path)) {
+            Some(p) => p,
+            None => continue
+        };
+
+        let dir_href = relative_path.display().to_string();
+
+        let dir_show = entity_path.path().display().to_string();
         let dir_show = dir_show.split("/").last().unwrap(); // gets the last part of path 
                                                             // Eg: (/a/b/c/d -> d)
 
         match entity_path.file_type() {
             Ok(file) => {
                 if file.is_dir() {
-                    dirs_str.push_str(&format!("<li><a href='{}'>{}/</a></li>\n", &dir_href, &dir_show));
+                    dirs_str.push_str(&format!("<li><a href='{}'>{}/</a></li>\n", &dir_href, &dir_show)); // Add an extra / at the end to show it's a directory
                 }
                 else {
                     dirs_str.push_str(&format!("<li><a href='{}'>{}</a></li>\n", &dir_href, &dir_show));

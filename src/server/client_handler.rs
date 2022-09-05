@@ -35,7 +35,7 @@ pub async fn process_request(req: Request, config: &Config) -> Response {
     if Path::new(&path_str).is_dir() {
         resp_code = Ok200;
 
-        resp_str = dir_listing(&path_str).as_bytes().to_vec();
+        resp_str = dir_listing(&path_str, &config).as_bytes().to_vec();
     } else { // is a file
         match read_file(&path_str).await {
             Err(e) => {
@@ -104,9 +104,9 @@ async fn read_file(path: &String) -> Result<Vec<u8>, String> {
     Ok(buf)
 }
 
-fn dir_listing(path_str: &String) -> String {
+fn dir_listing(path_str: &String, config: &Config) -> String {
 
-    dir_list_html(path_str)
+    dir_list_html(path_str, config)
 }
 
 fn get_mime_type(path_str: &String) -> Result<String, ()> {
