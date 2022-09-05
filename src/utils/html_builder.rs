@@ -32,7 +32,7 @@ pub fn dir_list_html(path_str: &String, config: &Config) -> String {
     // To add to the html
     let mut dirs_str = String::new();
 
-    let absolute_path = match std::fs::canonicalize(path_str) {
+    let absolute_path = match std::fs::canonicalize(&config.path) {
         Ok(p) => p.display().to_string(),
         Err(_) => path_str.to_string(), // TODO: This is wrong
                                         // if it failes to get absolute path
@@ -45,7 +45,7 @@ pub fn dir_list_html(path_str: &String, config: &Config) -> String {
     // Will look like
     // DIR TO SHOW   -> Points to certain link
     // src/          -> /asdf/bda/src/
-    for p in std::fs::read_dir(&absolute_path).unwrap() {
+    for p in std::fs::read_dir(&path_str).unwrap() {
         // remove(0) is to remove (./ -> /) the `.` which represents current dir
         // which is the relative path to the server not the browser
 
@@ -62,7 +62,7 @@ pub fn dir_list_html(path_str: &String, config: &Config) -> String {
             Err(_) => continue
         };
 
-        let relative_path = match pathdiff::diff_paths(absolute_entity_pathbuf.as_path(), std::path::Path::new(&config.path)) {
+        let relative_path = match pathdiff::diff_paths(absolute_entity_pathbuf.as_path(), std::path::Path::new(&absolute_path)) {
             Some(p) => p,
             None => continue
         };
@@ -89,6 +89,11 @@ pub fn dir_list_html(path_str: &String, config: &Config) -> String {
 
     }
 
+    let dir_path = match pathdiff::diff_paths(std::path::Path::new(&path_str), std::path::Path::new(&absolute_path)) {
+        Some(p) => p.display().to_string(),
+        None => path_str.to_string(),
+    };
+
     format!("
 <!DOCTYPE html>\n\
 <html>\n\
@@ -101,7 +106,7 @@ pub fn dir_list_html(path_str: &String, config: &Config) -> String {
 {}\n\
 </ul>\n\
 <hr>\n\
-</body></html>\n", path_str, path_str, dirs_str)
+</body></html>\n", dir_path, dir_path, dirs_str)
 
 }
 
