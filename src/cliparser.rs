@@ -1,3 +1,5 @@
+use std::path::Component;
+
 use clap::Parser;
 
 /// A minimal asynchronous static http webserver written in rust
@@ -15,7 +17,6 @@ pub struct Config {
     /// Port for the server 
     #[clap(short, long, value_parser, default_value_t = 8080)]
     pub port: u16,
-
 }
 
 impl Clone for Config {
@@ -64,10 +65,11 @@ fn verify_ip(ip: &String) -> Result<(), String> {
 fn verify_path(conf: &mut Config) -> Result<(), String> {
     use std::path::Path;
 
-    let path_string = &conf.path;
+    let path_string = conf.path.clone();
 
-    let p = Path::new(path_string);
+    let p = Path::new(&path_string);
 
+    // TODO: Switch to try_exists
     if !p.exists() {
         return Err(format!("Path doesn't exists: {}", path_string));
     }

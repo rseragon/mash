@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, process::exit};
 
 use crate::{server::response::ResponseCode, cliparser::Config};
 
@@ -34,10 +34,13 @@ pub fn dir_list_html(path_str: &String, config: &Config) -> String {
 
     let absolute_path = match std::fs::canonicalize(&config.path) {
         Ok(p) => p.display().to_string(),
-        Err(_) => path_str.to_string(), // TODO: This is wrong
+        Err(_) => {
+            paris::error!("An unforseen error occured");
+            exit(-1);
+        },
+        // Err(_) => path_str.to_string(), // TODO: This is wrong
                                         // if it failes to get absolute path
                                         // it shouldn't work
-
     };
 
     // make a list of dirs which can be used by the 
@@ -76,20 +79,21 @@ pub fn dir_list_html(path_str: &String, config: &Config) -> String {
         match entity_path.file_type() {
             Ok(file) => {
                 if file.is_dir() {
-                    dirs_str.push_str(&format!("<li><a href='{}'>{}/</a></li>\n", &dir_href, &dir_show)); // Add an extra / at the end to show it's a directory
+                    dirs_str.push_str(&format!("<li><a href='/{}'>{}/</a></li>\n", &dir_href, &dir_show)); // Add an extra / at the end to show it's a directory
                 }
                 else {
-                    dirs_str.push_str(&format!("<li><a href='{}'>{}</a></li>\n", &dir_href, &dir_show));
+                    dirs_str.push_str(&format!("<li><a href='/{}'>{}</a></li>\n", &dir_href, &dir_show));
                 }
             },
             Err(_) => {
-                dirs_str.push_str(&format!("<li><a href='{}'>{}</a></li>\n", &dir_href, &dir_show));
+                dirs_str.push_str(&format!("<li><a href='/{}'>{}</a></li>\n", &dir_href, &dir_show));
             }
         }
 
     }
 
     let root_dir_path;
+
 
     // Since path_str comes with an extra "/" at the end
     // TODO: This is a bad algo
@@ -108,6 +112,7 @@ pub fn dir_list_html(path_str: &String, config: &Config) -> String {
             None => path_str.to_string(),
         };
     }
+
     format!("
 <!DOCTYPE html>\n\
 <html>\n\
