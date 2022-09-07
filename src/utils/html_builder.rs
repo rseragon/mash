@@ -6,22 +6,21 @@ use crate::{server::response::ResponseCode, cliparser::Config};
 pub fn error_page_builder(code: &ResponseCode, msg: &String) -> String {
 
     format!("
-<!DOCTYPE html>
-<html>
-<head>
-<title>{}</title>
-</head>
-
-<body>
-Error occured :( 
-<br/>
-Status Code: {}
-<hr/>
-
-Reason: {}
-</body>
-
-</html>", code.to_string(), code.to_string(), msg)
+<!DOCTYPE html>\n\
+<html>\n\
+<head>\n\
+<title>{}</title>\n\
+</head>\n\
+\n\
+<body>\n\
+Error occured :( \n\
+<br/>\n\
+Status Code: {}\n\
+<hr/>\n\
+Reason: {}\n\
+</body>\n\
+\n\
+</html>\n", code.to_string(), code.to_string(), msg)
 
 }
 
