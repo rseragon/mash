@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 pub mod req_funcs;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum RequestType {
     GET
 }
@@ -18,5 +18,7 @@ pub struct Request {
     pub path: String,
     pub http_version: HttpVersion,
     pub content_headers: HashMap<String, String>,
-}
 
+    pub arguments: HashMap<String, String>,
+    pub extra_data: String,
+}

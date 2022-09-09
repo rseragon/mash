@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-
 use crate::{server::response::ResponseCode, cliparser::Config};
 use crate::utils::err_and_expl::ErrAndExpl;
 
@@ -45,7 +44,7 @@ impl Request {
         }
 
         // (2) request path
-        let req_path = match iter.next() {
+        let mut req_path = match iter.next() {
             None => {
                 return Err(ErrAndExpl::new(ResponseCode::BadRequest400,
                                            String::from("Illegal path format: request doesn't contain path")));
@@ -65,7 +64,20 @@ impl Request {
             true => {}
         }
         */
+        // Check for GET request arguments
+        let mut arguments = HashMap::new(); // TODO: Init only once
+        if method == RequestType::GET && req_path.contains("?") {
 
+            let (real_path, args) = match req_path.split_once("?") {
+                Some((r, a)) => (r,a),
+                None => (req_path, ""),
+            };
+
+            if !args.is_empty() {
+                arguments = parse_path_args(args);
+            }
+            req_path = real_path;
+        }
 
         // (3) HTTP version
         let version_str = match iter.next() {
@@ -92,7 +104,27 @@ impl Request {
             req_type: method,
             path: String::from(req_path),
             http_version: version,
-            content_headers: HashMap::new()
+            content_headers: HashMap::new(),
+
+            arguments: arguments,
+            extra_data: String::new(),
         })
     }
+}
+
+fn parse_path_args(args: &str) -> HashMap<String, String> {
+    let mut argument_map = HashMap::new();
+
+    for arg in args.split("&") {
+
+        let (key, val) = match arg.split_once("=") {
+            Some((k,v)) => (k,v),
+            None => continue
+        };
+
+        argument_map.insert(key.to_string(), val.to_string());
+
+    }
+
+    argument_map
 }
