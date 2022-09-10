@@ -3,7 +3,8 @@ pub mod req_funcs;
 
 #[derive(Debug, PartialEq)]
 pub enum RequestType {
-    GET
+    GET,
+    POST
 }
 
 #[derive(Debug)]

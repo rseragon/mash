@@ -19,11 +19,16 @@ impl Request {
             },
         };
 
-        let mut iter = buf_str.split_ascii_whitespace();
+        let mut iter = buf_str.clone().split_ascii_whitespace();
 
         // EG:
         // GET  /  HTTP/1.1
         // (1) (2)  (3)
+        // Content-Headers
+        // (4)
+        //
+        // Extra data
+        // (5)
 
         // (1) Method
         let method_str = match iter.next() {
@@ -37,6 +42,9 @@ impl Request {
 
         if method_str == "GET" {
             method = RequestType::GET;
+        }
+        else if method_str == "POST" {
+            method = RequestType::POST;
         }
         else {
             return Err(ErrAndExpl::new(ResponseCode::NotImplemented501,
@@ -100,14 +108,58 @@ impl Request {
                                        format!("HTTP version '{version_str}' not supported")));
         }
 
+        /* NEW iterator to collect other data */
+        // Collect the rest of data 
+        // content headers, arguments, extra data
+
+        let mut line_iter = buf_str.split("\n");
+        // Skip the first line ;)
+        match line_iter.next() {
+            Some(_) => {},
+            None => {}
+        };
+
+        let mut content_headers = HashMap::new();
+        let mut extra_data = String::new();
+        loop {
+            
+            let text = match line_iter.next() {
+                Some(x) => x,
+                None => break
+            };
+
+            let (k, v) = match text.split_once(":") {
+                Some((k,v)) => (k,v),
+                None => {
+                    extra_data.push_str(text);
+                    continue;
+                }
+            };
+            content_headers.insert(k.trim().to_string(), v.trim().to_string());
+        };
+
+        // Get POST arguments
+        if method == RequestType::POST {
+
+            let args = extra_data.split("&");
+
+            for arg in args {
+                let (k, v) = match arg.split_once("=") {
+                    Some((k,v)) => (k,v),
+                    None => continue,
+                };
+                arguments.insert(k.trim().to_string(), v.trim().to_string());
+            }
+        }
+
         Ok(Request {
             req_type: method,
             path: String::from(req_path),
             http_version: version,
-            content_headers: HashMap::new(),
+            content_headers: content_headers,
 
             arguments: arguments,
-            extra_data: String::new(),
+            extra_data: extra_data,
         })
     }
 }
