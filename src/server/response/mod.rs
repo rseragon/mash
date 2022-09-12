@@ -11,7 +11,7 @@ pub enum ResponseCode {
     BadRequest400,
     Forbidden403,
     NotFound404,
-    InternalServerError500,
+    // InternalServerError500,
     NotImplemented501,
     HttpVersionNotSupported505,
 }
@@ -31,11 +31,11 @@ impl ToString for ResponseCode {
             ResponseCode::BadRequest400 => "400 Bad Request",
             ResponseCode::Forbidden403 => "403 Forbidden",
             ResponseCode::NotFound404 => "404 Not Found",
-            ResponseCode::InternalServerError500 => "500 Internal Server Error",
+            // ResponseCode::InternalServerError500 => "500 Internal Server Error",
             ResponseCode::NotImplemented501 => "501 Not Implemented",
             ResponseCode::HttpVersionNotSupported505 => "505 HTTP Version Not Supported",
         }.to_string();
 
-        return status;
+        status
     }
 }

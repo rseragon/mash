@@ -1,4 +1,4 @@
-use std::{collections::HashMap, process::exit};
+use std::process::exit;
 
 use crate::{server::response::ResponseCode, cliparser::Config};
 

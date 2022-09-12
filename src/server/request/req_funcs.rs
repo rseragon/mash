@@ -10,7 +10,7 @@ impl Request {
     // TODO: parse content reqeust headers
     // TODO: print info about the request parsing
     /// Parses and verifies the request
-    pub fn parse(buf: &[u8], config: &Config) -> Result<Request, ErrAndExpl<ResponseCode>> {
+    pub fn parse(buf: &[u8], _config: &Config) -> Result<Request, ErrAndExpl<ResponseCode>> {
         let buf_str = match std::str::from_utf8(buf) {
             Ok(res) => res,
             Err(_) => { 
@@ -156,6 +156,7 @@ impl Request {
             req_type: method,
             path: String::from(req_path),
             http_version: version,
+
             content_headers: content_headers,
 
             arguments: arguments,

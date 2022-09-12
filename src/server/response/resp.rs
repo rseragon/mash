@@ -12,9 +12,9 @@ impl Response {
         }
     }
 
-    pub fn set_status_code(&mut self, code: ResponseCode) {
-        self.status_code = code;
-    }
+    // pub fn set_status_code(&mut self, code: ResponseCode) {
+    //     self.status_code = code;
+    // }
 
     pub fn set_headers(&mut self, headers: HashMap<&'static str, String>) {
         self.headers = headers;
@@ -24,10 +24,10 @@ impl Response {
         self.body = body;
     }
 
-    pub fn set_body_vec(&mut self, body: Vec<u8>) {
-        self.body = body;
-    }
-
+    // pub fn set_body_vec(&mut self, body: Vec<u8>) {
+    //     self.body = body;
+    // }
+    //
     pub fn modify_header(&mut self, key: &'static str, value: String) {
         self.headers.insert(key, value);
     }
@@ -79,10 +79,10 @@ impl Response {
     }
 
 
-    pub async fn send_resp(&mut self, mut sock: &mut TcpStream) -> Result<(), String> {
+    pub async fn send_resp(&mut self, sock: &mut TcpStream) -> Result<(), String> {
 
         // send header
-        match stream_utils::write_bytes(&mut sock, self.build_header().as_bytes()).await {
+        match stream_utils::write_bytes(sock, self.build_header().as_bytes()).await {
             Err(e) => {
                 paris::error!("{}", e);
             },
@@ -93,7 +93,7 @@ impl Response {
         // tokio::time::sleep(std::time::Duration::from_secs(1)).await;
 
         // send body
-        match stream_utils::write_bytes(&mut sock, &self.body[..]).await {
+        match stream_utils::write_bytes(sock, &self.body[..]).await {
             Err(e) => {
                 paris::error!("{}", e);
             },

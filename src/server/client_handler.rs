@@ -1,4 +1,3 @@
-use std::os::unix::prelude::MetadataExt;
 use std::path::Path;
 
 use tokio::io::AsyncReadExt;

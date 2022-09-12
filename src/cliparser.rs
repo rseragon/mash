@@ -1,5 +1,3 @@
-use std::path::Component;
-
 use clap::Parser;
 
 /// A minimal asynchronous static http webserver written in rust
