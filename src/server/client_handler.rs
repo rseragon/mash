@@ -127,6 +127,6 @@ fn get_mime_type(path_str: &String) -> Result<String, ()> {
     // TODO: is okay for now, but should consider others
     let mime_type = guess.first_raw().unwrap();
 
-    return Ok(String::from(mime_type));
+    Ok(String::from(mime_type))
 
 }

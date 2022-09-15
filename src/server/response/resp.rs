@@ -81,24 +81,15 @@ impl Response {
 
     pub async fn send_resp(&mut self, sock: &mut TcpStream) -> Result<(), String> {
 
-        // send header
-        match stream_utils::write_bytes(sock, self.build_header().as_bytes()).await {
-            Err(e) => {
-                paris::error!("{}", e);
-            },
-            Ok(_) => {}, // TODO
-        };
-
-        // Sleep for a sec
-        // tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+        // send headers
+        if let Err(e) = stream_utils::write_bytes(sock, self.build_header().as_bytes()).await {
+            paris::error!("Failed to send headers: {}", e);
+        }
 
         // send body
-        match stream_utils::write_bytes(sock, &self.body[..]).await {
-            Err(e) => {
-                paris::error!("{}", e);
-            },
-            Ok(_) => {}, // TODO
-        };
+        if let Err(e) = stream_utils::write_bytes(sock, &self.body[..]).await {
+            paris::error!("Failed to send body: {}", e);
+        }
 
         Ok(())
     }

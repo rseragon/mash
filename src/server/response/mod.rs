@@ -25,8 +25,7 @@ pub struct Response {
 
 impl ToString for ResponseCode {
     fn to_string(&self) -> String {
-
-        let status = match self {
+        match self {
             ResponseCode::Ok200 => "200 OK",
             ResponseCode::BadRequest400 => "400 Bad Request",
             ResponseCode::Forbidden403 => "403 Forbidden",
@@ -34,8 +33,6 @@ impl ToString for ResponseCode {
             // ResponseCode::InternalServerError500 => "500 Internal Server Error",
             ResponseCode::NotImplemented501 => "501 Not Implemented",
             ResponseCode::HttpVersionNotSupported505 => "505 HTTP Version Not Supported",
-        }.to_string();
-
-        status
+        }.to_string()
     }
 }

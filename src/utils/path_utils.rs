@@ -5,7 +5,7 @@ use crate::cliparser::Config;
 
 use crate::server::response::ResponseCode;
 use super::err_and_expl::ErrAndExpl;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 
 /// Checks if the path is valid and returns the path w.r.t to the
@@ -17,9 +17,9 @@ pub fn server_cwd_path(path_str: &str, config: &Config) -> Result<String, ErrAnd
 
     use ResponseCode::*;
 
-    if path_str.len() < 1 {
+    if path_str.is_empty() {
         return Err(ErrAndExpl::new(BadRequest400, 
-                                   format!("Invalid path")));
+                                   "Invalid path: path string empty".to_string()));
     }
 
     let mut req_path_str = path_str.to_string(); 
@@ -51,7 +51,7 @@ pub fn server_cwd_path(path_str: &str, config: &Config) -> Result<String, ErrAnd
 }
 
 // Check if you have read rights on that path
-pub fn verify_path(req_path: &PathBuf, config: &Config) -> Result<(), ResponseCode> {
+pub fn verify_path(req_path: &Path, config: &Config) -> Result<(), ResponseCode> {
     // Get the canocnical paths to check the ancestors
     use ResponseCode::*;
 

@@ -19,7 +19,8 @@ impl Request {
             },
         };
 
-        let mut iter = buf_str.clone().split_ascii_whitespace();
+        // TODO: shouldn't thie be cloned?
+        let mut iter = buf_str.split_ascii_whitespace();
 
         // EG:
         // GET  /  HTTP/1.1
@@ -74,9 +75,9 @@ impl Request {
         */
         // Check for GET request arguments
         let mut arguments = HashMap::new(); // TODO: Init only once
-        if method == RequestType::GET && req_path.contains("?") {
+        if method == RequestType::GET && req_path.contains('?') {
 
-            let (real_path, args) = match req_path.split_once("?") {
+            let (real_path, args) = match req_path.split_once('?') {
                 Some((r, a)) => (r,a),
                 None => (req_path, ""),
             };
@@ -112,7 +113,7 @@ impl Request {
         // Collect the rest of data 
         // content headers, arguments, extra data
 
-        let mut line_iter = buf_str.split("\n");
+        let mut line_iter = buf_str.split('\n');
         // Skip the first line ;)
         match line_iter.next() {
             Some(_) => {},
@@ -121,14 +122,10 @@ impl Request {
 
         let mut content_headers = HashMap::new();
         let mut extra_data = String::new();
-        loop {
-            
-            let text = match line_iter.next() {
-                Some(x) => x,
-                None => break
-            };
+        // while let Some(text) = line_iter.next() {
+        for text in line_iter {
 
-            let (k, v) = match text.split_once(":") {
+            let (k, v) = match text.split_once(':') {
                 Some((k,v)) => (k,v),
                 None => {
                     extra_data.push_str(text);
@@ -136,15 +133,16 @@ impl Request {
                 }
             };
             content_headers.insert(k.trim().to_string(), v.trim().to_string());
+
         };
 
         // Get POST arguments
         if method == RequestType::POST {
 
-            let args = extra_data.split("&");
+            let args = extra_data.split('&');
 
             for arg in args {
-                let (k, v) = match arg.split_once("=") {
+                let (k, v) = match arg.split_once('=') {
                     Some((k,v)) => (k,v),
                     None => continue,
                 };
@@ -157,10 +155,10 @@ impl Request {
             path: String::from(req_path),
             http_version: version,
 
-            content_headers: content_headers,
+            content_headers,
 
-            arguments: arguments,
-            extra_data: extra_data,
+            arguments,
+            extra_data,
         })
     }
 }
@@ -168,9 +166,9 @@ impl Request {
 fn parse_path_args(args: &str) -> HashMap<String, String> {
     let mut argument_map = HashMap::new();
 
-    for arg in args.split("&") {
+    for arg in args.split('&') {
 
-        let (key, val) = match arg.split_once("=") {
+        let (key, val) = match arg.split_once('=') {
             Some((k,v)) => (k,v),
             None => continue
         };

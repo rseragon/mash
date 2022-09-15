@@ -72,7 +72,7 @@ pub fn dir_list_html(path_str: &String, config: &Config) -> String {
         let dir_href = relative_path.display().to_string();
 
         let dir_show = entity_path.path().display().to_string();
-        let dir_show = dir_show.split("/").last().unwrap(); // gets the last part of path 
+        let dir_show = dir_show.split('/').last().unwrap(); // gets the last part of path 
                                                             // Eg: (/a/b/c/d -> d)
 
         match entity_path.file_type() {

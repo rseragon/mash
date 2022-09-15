@@ -28,9 +28,7 @@ impl Clone for Config {
 }
 
 pub fn parse() -> Config {
-    let args = Config::parse();
-
-    args
+    Config::parse()
 }
 
 pub fn verify_config(conf: &mut Config) -> Result<(), String> {
@@ -43,19 +41,26 @@ pub fn verify_config(conf: &mut Config) -> Result<(), String> {
 
 fn verify_ip(ip: &String) -> Result<(), String> {
 
-    let ip_octals: Vec<&str> = ip.split(".").collect();
+    let ip_octals: Vec<&str> = ip.split('.').collect();
 
     if ip_octals.len() != 4 { // x.x.x.x (4 parts)
         return Err(format!("Ill formatted IPv4: {}", ip));
     }
 
-    for idx in 0..4 {
+    for octet in ip_octals.iter().take(4) {
         // Confirms that the octets are in range 0..=255
-        match ip_octals[idx].parse::<u8>() {
+        match octet.parse::<u8>() {
             Ok(x) => x,
             Err(_) => return Err(format!("Ill formatted IPv4: {}", ip)),
         };
     }
+    //
+    // for idx in 0..4 {
+    //     match ip_octals[idx].parse::<u8>() {
+    //         Ok(x) => x,
+    //         Err(_) => return Err(format!("Ill formatted IPv4: {}", ip)),
+    //     };
+    // }
 
     Ok(())
 }

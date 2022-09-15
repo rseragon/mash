@@ -1,6 +1,4 @@
 use std::process;
-use tokio;
-use paris;
 
 mod cliparser;
 mod utils;
