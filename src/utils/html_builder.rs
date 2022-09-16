@@ -1,4 +1,5 @@
 use std::process::exit;
+use std::fmt::Write as _;
 
 use crate::{server::response::ResponseCode, cliparser::Config};
 
@@ -75,17 +76,21 @@ pub fn dir_list_html(path_str: &String, config: &Config) -> String {
         let dir_show = dir_show.split('/').last().unwrap(); // gets the last part of path 
                                                             // Eg: (/a/b/c/d -> d)
 
+        // TODO: remove expect
         match entity_path.file_type() {
             Ok(file) => {
                 if file.is_dir() {
-                    dirs_str.push_str(&format!("<li><a href='/{}'>{}/</a></li>\n", &dir_href, &dir_show)); // Add an extra / at the end to show it's a directory
+                    // dirs_str.push_str(&format!("<li><a href='/{}'>{}/</a></li>\n", &dir_href, &dir_show)); // Add an extra / at the end to show it's a directory
+                    writeln!(dirs_str, "<li><a href='/{}'>{}/</a></li>", &dir_href, &dir_show).expect("Wut?");
                 }
                 else {
-                    dirs_str.push_str(&format!("<li><a href='/{}'>{}</a></li>\n", &dir_href, &dir_show));
+                    // dirs_str.push_str(&format!("<li><a href='/{}'>{}</a></li>\n", &dir_href, &dir_show));
+                    writeln!(dirs_str, "<li><a href='/{}'>{}</a></li>", &dir_href, &dir_show).expect("Wut?");
                 }
             },
             Err(_) => {
-                dirs_str.push_str(&format!("<li><a href='/{}'>{}</a></li>\n", &dir_href, &dir_show));
+                // dirs_str.push_str(&format!("<li><a href='/{}'>{}</a></li>\n", &dir_href, &dir_show));
+                writeln!(dirs_str, "<li><a href='/{}'>{}</a></li>", &dir_href, &dir_show).expect("Wut?");
             }
         }
 
@@ -97,12 +102,12 @@ pub fn dir_list_html(path_str: &String, config: &Config) -> String {
     // Since path_str comes with an extra "/" at the end
     // TODO: This is a bad algo
     if path_str == &format!("{}/", config.path) {
-        let a: Vec<&str> = path_str.split("/").collect();
+        let a: Vec<&str> = path_str.split('/').collect();
         if a.is_empty() {
             root_dir_path = "".to_string();
         }
         else {
-            root_dir_path = a[a.len()-2].to_string();
+            root_dir_path = a[a.len()-2].to_string(); // ?!?
         }
     }
     else {
