@@ -38,7 +38,6 @@ pub async fn process_request(req: Request, config: &Config) -> Response {
     } else { // is a file
         match read_file(&path_str).await {
             Err(e) => {
-                // TODO: add better html for error
                 resp_code = NotFound404;
                 // resp_str = e.as_bytes().to_vec();
                 resp_str = html_builder::error_page_builder(&resp_code, &e).as_bytes().to_vec();
