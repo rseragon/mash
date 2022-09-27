@@ -2,6 +2,8 @@
 name = "mash-http"
 version = "0.9.1"
 edition = "2021"
+license = "MIT"
+license-file = "LICENSE"
 description = "A Minimal Asynchronous Static HTTP web server written in rust"
 readme = "README.md"
 repository = "https://github.com/rseragon/mash"
