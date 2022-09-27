@@ -23,11 +23,6 @@ pub async fn write_bytes(sock: &mut TcpStream, buf: &[u8]) -> Result<(), String>
         return Err(format!("Failed to write: {}", err));
     }
 
-    // match sock.write_all(buf).await {
-    //     Err(err) => return Err(format!("Failed to write: {}", err)),
-    //     Ok(_) => {},
-    // };
-
     if let Err(err) = sock.flush().await {
         return Err(format!("Failed to flush socket: {}", err));
     }

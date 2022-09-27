@@ -1,11 +1,15 @@
 [package]
-name = "mash"
+name = "mash-http"
 version = "0.9.1"
 edition = "2021"
 description = "A Minimal Asynchronous Static HTTP web server written in rust"
 readme = "README.md"
 repository = "https://github.com/rseragon/mash"
 keywords = ["http", "static-webserver", "ftp"]
+
+[[bin]]
+name = "mash"
+path = "src/main.rs"
 
 [dependencies]
 clap = { version = "3.2.5", features = ["derive"] }
