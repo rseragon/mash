@@ -2,8 +2,9 @@
 A Minimal Asynchronous HTTP web server written in rust
 
 ## Install
-Install via crates.io
-
+```
+cargo install mash-http
+```
 
 ## Usage
 ```console
