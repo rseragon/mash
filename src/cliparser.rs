@@ -15,6 +15,10 @@ pub struct Config {
     /// Port for the server 
     #[clap(short, long, value_parser, default_value_t = 8080)]
     pub port: u16,
+
+    /// Open index.html if present in directory
+    #[clap(long, short)]
+    pub detect_index_html: bool
 }
 
 impl Clone for Config {
@@ -23,6 +27,7 @@ impl Clone for Config {
             host: self.host.clone(),
             port: self.port,
             path: self.path.clone(),
+            detect_index_html: self.detect_index_html
         }
     }
 }
