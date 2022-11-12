@@ -40,7 +40,7 @@ pub async fn process_request(req: Request, config: &Config) -> Response {
         // else give directory listing
         let index_html_path = curr_path.join("index.html");
 
-        if index_html_path.exists() && config.detect_index_html {
+        if config.detect_index_html && index_html_path.exists() {
 
             body = match read_file(&index_html_path.display().to_string()).await {
                 Err(_) => dir_listing(&path_str, &config).as_bytes().to_vec(), // If failed, just
