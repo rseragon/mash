@@ -2,7 +2,6 @@
 name = "mash-http"
 version = "0.9.1"
 edition = "2021"
-license = "MIT"
 license-file = "LICENSE"
 description = "A Minimal Asynchronous Static HTTP web server written in rust"
 readme = "README.md"
@@ -20,3 +19,4 @@ paris = { version = "1.5", features = ["timestamps", "macros"] }
 urlencoding = "2.1.0"
 mime_guess = "2.0.4"
 pathdiff = "0.2.1"
+typed-html = { git = "https://github.com/bodil/typed-html#4c13ecca" }

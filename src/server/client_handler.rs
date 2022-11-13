@@ -74,12 +74,12 @@ pub async fn process_request(req: Request, config: &Config) -> Response {
                         body = text_page(&path_str).as_bytes().to_vec(); // TODO: This seems dubious
                                                                          // since we've to convert
                                                                          // strings into vector
+                        resp_header.insert("Content-Type", "text/html".to_string());
                     }
                     else {
                         body = s; // If mime gets okay but file is not md file
+                        resp_header.insert("Content-Type", mime_type);
                     }
-
-                    resp_header.insert("Content-Type", mime_type);
                     // Set the file size for known mime types
                     // so that browser can read it
 

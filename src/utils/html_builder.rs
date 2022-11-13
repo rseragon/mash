@@ -1,27 +1,29 @@
 use std::process::exit;
 use std::fmt::Write as _;
+use typed_html::{html, dom::DOMTree, text, htmlescape};
 
 use crate::{server::response::ResponseCode, cliparser::Config};
 
 /// Returns and error page
 pub fn error_page_builder(code: &ResponseCode, msg: &String) -> String {
 
-    format!("
-<!DOCTYPE html>\n\
-<html>\n\
-<head>\n\
-<title>{}</title>\n\
-</head>\n\
-\n\
-<body>\n\
-Error occured :( \n\
-<br/>\n\
-Status Code: {}\n\
-<hr/>\n\
-Reason: {}\n\
-</body>\n\
-\n\
-</html>\n", code.to_string(), code.to_string(), msg)
+    let err_page: DOMTree<String> = html!(
+
+        <html>
+            <head>
+                <title>{text!("{}", code.to_string())}</title>
+            </head>
+
+            <body>
+                <h1>"Error occured :("</h1>
+                <hr/>
+                <h4>{text!("Status code: {}", code.to_string())}</h4>
+                <p>{text!("{}", msg)}</p>
+            </body>
+        </html>
+    );
+
+    err_page.to_string()
 
 }
 
@@ -147,6 +149,23 @@ pub fn text_page(path: &String) -> String {
         Err(_) => "".to_string(), // TODO: Handle this
     };
 
+    // DOES NOT work
+    // as it has to wrapped around mmd()
+    // let a: DOMTree<String> = html!(
+    //     <html>
+    //         <head> 
+    //             <title>{text!("{}", path)}</title>
+    //         </head>
+    //
+    //         <body>
+    //             {text!{"{}", file_str}}
+    //             <script>
+    //                 {text!("{}", mmd)}
+    //             </script>
+    //         </body>
+    //
+    //     </html>
+    // );
 
     format!("
 <!DOCTYPE html>\n\
@@ -163,5 +182,4 @@ body.innerHTML = mmd(`{}`);\n\
 </script>\n\
 </body>\n\
 </html>", path, mmd, file_str)
-
 }
