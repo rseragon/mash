@@ -90,7 +90,7 @@ pub async fn process_request(req: Request, config: &Config) -> Response {
 
                 }
                 else {
-                    body = s; // If mime files to acertain the file type
+                    body = s; // If mime failes to acertain the file type
                 }
             }
         };

@@ -1,6 +1,6 @@
 [package]
 name = "mash-http"
-version = "0.9.1"
+version = "0.9.8"
 edition = "2021"
 license-file = "LICENSE"
 description = "A Minimal Asynchronous Static HTTP web server written in rust"
